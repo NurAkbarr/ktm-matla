@@ -12,6 +12,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="color-scheme" content="light dark">
     <link rel="shortcut icon" href="{{ asset('images/logo-kampus.png') }}" type="image/x-icon">
 
     <title>Profil Mahasiswa - {{ $mahasiswa->nama }}</title>
@@ -23,14 +24,11 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <!-- AlpineJS -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* gray-100 */
+            /* background-color removed to allow Tailwind classes to control theme */
         }
         /* Hide scrollbar for Chrome, Safari and Opera */
         .no-scrollbar::-webkit-scrollbar {
@@ -43,10 +41,29 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 antialiased min-h-screen flex justify-center bg-gray-200 dark:bg-gray-800"
+<body class="bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100 antialiased min-h-screen flex justify-center"
       x-data="{ 
+          darkMode: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
           openModal: false, 
           activeItem: null,
+          init() {
+              // Apply initial state
+              if (this.darkMode) {
+                  document.documentElement.classList.add('dark');
+              } else {
+                  document.documentElement.classList.remove('dark');
+              }
+              
+              // Watch for changes
+              this.$watch('darkMode', val => {
+                  localStorage.theme = val ? 'dark' : 'light';
+                  if (val) {
+                      document.documentElement.classList.add('dark');
+                  } else {
+                      document.documentElement.classList.remove('dark');
+                  }
+              });
+          },
           showDetail(item) {
               this.activeItem = item;
               this.openModal = true;
@@ -54,10 +71,10 @@
       }">
 
     <!-- Mobile App Container -->
-    <div class="w-full max-w-md bg-gray-50 dark:bg-gray-900 min-h-screen shadow-2xl relative overflow-x-hidden flex flex-col">
+    <div class="w-full max-w-md bg-gray-50 dark:bg-gray-900 min-h-screen shadow-2xl relative overflow-x-hidden flex flex-col transition-colors duration-300">
         
         <!-- HEADER -->
-        <div class="bg-white dark:bg-gray-800 px-6 py-4 flex justify-between items-center shadow-sm sticky top-0 z-40 border-b dark:border-gray-700">
+        <div class="bg-white dark:bg-gray-900 px-6 py-4 flex justify-between items-center shadow-sm sticky top-0 z-40 border-b border-gray-100 dark:border-gray-800 transition-colors duration-300">
             <div class="flex items-center gap-3">
                 <img src="{{ asset('images/logo-kampus.png') }}"
                      alt="MATLA Logo" 
@@ -67,23 +84,15 @@
             
             <div class="flex items-center gap-2">
                 <!-- Dark Mode Toggle -->
-                <button id="theme-toggle" type="button" 
-                    class="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none transition-colors"
-                    onclick="
-                        if (localStorage.theme === 'dark') {
-                            localStorage.theme = 'light';
-                            document.documentElement.classList.remove('dark');
-                        } else {
-                            localStorage.theme = 'dark';
-                            document.documentElement.classList.add('dark');
-                        }
-                    ">
-                    <!-- Sun Icon -->
-                    <svg id="theme-toggle-light-icon" class="hidden dark:block w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button type="button" 
+                    class="p-2 rounded-full text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 focus:outline-none transition-colors"
+                    @click="darkMode = !darkMode">
+                    <!-- Sun Icon (Show when Dark) -->
+                    <svg x-show="darkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: none;">
                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
-                    <!-- Moon Icon -->
-                    <svg id="theme-toggle-dark-icon" class="block dark:hidden w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- Moon Icon (Show when Light) -->
+                    <svg x-show="!darkMode" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                     </svg>
                 </button>
@@ -93,14 +102,14 @@
                         @auth
                             @if(Auth::user()->role === 'admin')
                                 {{-- Jika Admin, arahkan ke edit data mahasiswa ini --}}
-                                <a href="{{ route('admin.mahasiswa.edit', $mahasiswa->id) }}" class="p-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors" title="Edit Data (Admin)">
+                                <a href="{{ route('admin.mahasiswa.edit', $mahasiswa->id) }}" class="p-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 transition-colors" title="Edit Data (Admin)">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                 </a>
                             @elseif(Auth::user()->id === $mahasiswa->user_id)
                                  {{-- Jika Pemilik Profil, arahkan ke edit profil sendiri --}}
-                                <a href="{{ url('/ktm/mahasiswa/profil') }}" class="p-2 rounded-full bg-green-50 hover:bg-green-100 text-green-600 transition-colors" title="Edit Profil Saya">
+                                <a href="{{ url('/ktm/mahasiswa/profil') }}" class="p-2 rounded-full bg-green-50 hover:bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50 transition-colors" title="Edit Profil Saya">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
@@ -108,7 +117,7 @@
                             @else
                                 {{-- Jika user lain (Ahmad scan Abid), tawarkan ganti akun --}}
                                 <div class="flex gap-2">
-                                    <a href="{{ route('dashboard') }}" class="p-2 rounded-full bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors" title="Ke Dashboard Saya">
+                                    <a href="{{ route('dashboard') }}" class="p-2 rounded-full bg-gray-50 hover:bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors" title="Ke Dashboard Saya">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                         </svg>
@@ -116,7 +125,7 @@
                                     
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="p-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 transition-colors" title="Keluar / Ganti Akun" onclick="return confirm('Apakah Anda ingin keluar untuk login ke akun ini?');">
+                                        <button type="submit" class="p-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50 transition-colors" title="Keluar / Ganti Akun" onclick="return confirm('Apakah Anda ingin keluar untuk login ke akun ini?');">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                             </svg>
@@ -125,7 +134,7 @@
                                 </div>
                             @endif
                         @else
-                            <a href="{{ route('login') }}" class="p-2 rounded-full bg-gray-50 hover:bg-gray-100 text-green-600 transition-colors" title="Masuk">
+                            <a href="{{ route('login') }}" class="p-2 rounded-full bg-gray-50 hover:bg-gray-100 text-green-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors" title="Masuk">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                                 </svg>

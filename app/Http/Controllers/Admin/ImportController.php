@@ -53,6 +53,10 @@ class ImportController extends Controller
                 $email = trim($row[2]);
                 $prodi = trim($row[3]);
 
+                // Jenis Kelamin (Index 4), default to 'laki-laki' if missing
+                $jkInput = isset($row[4]) ? strtolower(trim($row[4])) : 'laki-laki';
+                $jenis_kelamin = ($jkInput === 'p' || $jkInput === 'perempuan') ? 'perempuan' : 'laki-laki';
+
                 // Validate uniqueness
                 if (Mahasiswa::where('nim', $nim)->exists() || User::where('email', $email)->exists()) {
                     $errors[] = "Baris " . ($index + 2) . ": NIM $nim atau Email $email sudah ada.";
@@ -73,6 +77,7 @@ class ImportController extends Controller
                     'nim' => $nim,
                     'nama' => $nama,
                     'prodi' => $prodi,
+                    'jenis_kelamin' => $jenis_kelamin,
                     'status' => 'aktif',
                     'qr_token' => Str::random(32),
                 ]);
