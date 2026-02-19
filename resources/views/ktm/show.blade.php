@@ -98,8 +98,9 @@
                 </button>
 
                 @if (Route::has('login'))
-                    <nav>
+                    <nav class="flex items-center gap-2">
                         @auth
+                            {{-- LOGIC TOMBOL EDIT --}}
                             @if(Auth::user()->role === 'admin')
                                 {{-- Jika Admin, arahkan ke edit data mahasiswa ini --}}
                                 <a href="{{ route('admin.mahasiswa.edit', $mahasiswa->id) }}" class="p-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 transition-colors" title="Edit Data (Admin)">
@@ -111,28 +112,28 @@
                                  {{-- Jika Pemilik Profil, arahkan ke edit profil sendiri --}}
                                 <a href="{{ url('/ktm/mahasiswa/profil') }}" class="p-2 rounded-full bg-green-50 hover:bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-300 dark:hover:bg-green-900/50 transition-colors" title="Edit Profil Saya">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                 </a>
                             @else
-                                {{-- Jika user lain (Ahmad scan Abid), tawarkan ganti akun --}}
-                                <div class="flex gap-2">
-                                    <a href="{{ route('dashboard') }}" class="p-2 rounded-full bg-gray-50 hover:bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors" title="Ke Dashboard Saya">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                        </svg>
-                                    </a>
-                                    
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="p-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50 transition-colors" title="Keluar / Ganti Akun" onclick="return confirm('Apakah Anda ingin keluar untuk login ke akun ini?');">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
+                                {{-- Jika user lain (Ahmad scan Abid), tawarkan ke dashboard sendiri --}}
+                                <a href="{{ route('dashboard') }}" class="p-2 rounded-full bg-gray-50 hover:bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors" title="Ke Dashboard Saya">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                    </svg>
+                                </a>
                             @endif
+
+                            {{-- TOMBOL LOGOUT (Selalu muncul jika login) --}}
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="p-2 rounded-full bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50 transition-colors" title="Keluar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                    </svg>
+                                </button>
+                            </form>
+
                         @else
                             <a href="{{ route('login') }}" class="p-2 rounded-full bg-gray-50 hover:bg-gray-100 text-green-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors" title="Masuk">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,7 +156,21 @@
                     <div class="flex items-center gap-4">
                         <!-- Foto Profil -->
                         <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-100 dark:border-gray-700 flex-shrink-0 bg-gray-200 dark:bg-gray-700 group relative">
-                            <a href="{{ route('login') }}" class="block w-full h-full relative">
+                            @php
+                                $linkFoto = route('login'); // Default Guest
+                                if(Auth::check()) {
+                                    if(Auth::user()->role === 'admin') {
+                                        $linkFoto = route('admin.mahasiswa.edit', $mahasiswa->id);
+                                    } elseif(Auth::user()->id === $mahasiswa->user_id) {
+                                        $linkFoto = url('/ktm/mahasiswa/profil');
+                                    } else {
+                                        // User lain melihat profil orang lain - tidak perlu link edit di foto
+                                        $linkFoto = 'javascript:void(0)'; 
+                                    }
+                                }
+                            @endphp
+
+                            <a href="{{ $linkFoto }}" class="block w-full h-full relative {{ Auth::check() && Auth::user()->id !== $mahasiswa->user_id && Auth::user()->role !== 'admin' ? 'cursor-default' : '' }}">
                                  @if($mahasiswa->profil && $mahasiswa->profil->foto)
                                     <img src="{{ asset('storage/' . $mahasiswa->profil->foto) }}"
                                     class="w-full h-full object-cover group-hover:opacity-80 transition-opacity">
@@ -165,12 +180,14 @@
                                     </div>
                                 @endif
                                 
-                                <!-- Edit Hint Overlay -->
-                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                    </svg>
-                                </div>
+                                <!-- Edit Hint Overlay (Hanya muncul jika boleh edit) -->
+                                @if(Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->id === $mahasiswa->user_id))
+                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
+                                    </div>
+                                @endif
                             </a>
                         </div>
                         
